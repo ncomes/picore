@@ -2,7 +2,8 @@
 import sys
 sys.path.append(r'/home/pi/python_projects')
 
-import server.multi_client as mc
+import server_ui.multi_client as mc
+import server_ui.shutdown_client as sc
 import python_core.json_data as json_data
 import PySide.QtCore as QtCore
 import PySide.QtGui as QtGui
@@ -14,6 +15,7 @@ HOSTS = ['192.168.86.243']
 PORT = 5560
 
 CAM_JSON = 'hosts_and_port'
+FACE_POSES_JSON = 'face_poses'
 CAM_JSON_PATH = r'/home/pi/python_projects/json'
 
 class TestUI(QtGui.QWidget):
@@ -27,10 +29,34 @@ class TestUI(QtGui.QWidget):
 		self.resize(500, 600)
 		
 		self.main_v_layout = QtGui.QVBoxLayout()
-		#self.main_v_layout.setContentMargins(5,5,5,5)
 		self.main_v_layout.setSpacing(5)
 		self.main_v_layout.setAlignment(QtCore.Qt.AlignTop)
 		self.setLayout(self.main_v_layout)
+		
+		# Menu bar
+		self.menu_bar = QtGui.QMenuBar(parent=self)
+		self.servers = QtGui.QMenu(self)
+		self.servers.setTitle('Servers')
+		self.menu_bar.addMenu(self.servers)
+		
+		self.shutdown_all_menu = QtGui.QAction('Shutdown All Servers', self)
+		self.shutdown_all_menu.triggered.connect(self.shutdown_all)
+		self.shutdown_all_menu.setStatusTip('Turns off all the Raspberry Pi Servers.')
+		self.servers.addAction(self.shutdown_all_menu)
+		
+		self.shutdown_one_menu = QtGui.QAction('Shutdown One Servers', self)
+		self.shutdown_one_menu.triggered.connect(self.shutdown_one)
+		self.shutdown_one_menu.setToolTip('Turns off the Raspberry Pi Server with the selected IP Address.')
+		self.servers.addAction(self.shutdown_one_menu)
+		
+		self.main_v_layout.addWidget(self.menu_bar)
+		
+		### Main Layout ###
+		
+		self.main_h_spacer_layout = QtGui.QHBoxLayout()
+		self.main_h_spacer_layout.setSpacing(25)
+		self.main_h_spacer_layout.setAlignment(QtCore.Qt.AlignTop)
+		self.main_v_layout.addLayout(self.main_h_spacer_layout)
 		
 		self.main_h_layout = QtGui.QHBoxLayout()
 		self.main_h_layout.setSpacing(5)
@@ -84,7 +110,7 @@ class TestUI(QtGui.QWidget):
 		self.replace_host_pushButton = QtGui.QPushButton('Replace IP Address')
 		self.add_host_layout.addWidget(self.replace_host_pushButton)
 		
-		# spacer
+		# v spacer
 		self.main_spacer_layout = QtGui.QVBoxLayout()
 		self.main_spacer_layout.setSpacing(5)
 		self.main_h_layout.addLayout(self.main_spacer_layout)
@@ -110,6 +136,9 @@ class TestUI(QtGui.QWidget):
 		self.poses_listWidget = QtGui.QListWidget()
 		self.poses_listWidget.setMinimumWidth(300)
 		self.main_capture_layout.addWidget(self.poses_listWidget)
+		
+		self.pose_lineEdit = QtGui.QLineEdit()
+		self.main_capture_layout.addWidget(self.pose_lineEdit)
 		
 		self.add_poses_layout = QtGui.QHBoxLayout()
 		self.main_capture_layout.addLayout(self.add_poses_layout)
@@ -139,13 +168,20 @@ class TestUI(QtGui.QWidget):
 		else:
 			self.host_listWidget.addItems(HOSTS)
 			self.port_lineEdit.setText(str(PORT))
-		
+		self.host_listWidget.setCurrentRow(0)
+			
+		pose_names = import_pose_names()
+		if pose_names:
+			self.poses_listWidget.addItems(pose_names)
+			self.poses_listWidget.setCurrentRow(0)
 		#------------------------------------------------------
 		# Signals
 		#------------------------------------------------------
-		self.pic_button.clicked.connect(self.take_photo)
+		self.pic_button.clicked.connect(self.capture)
 		self.add_host_pushButton.clicked.connect(self.add_host)
 		self.remove_host_pushButton.clicked.connect(self.remove_host)
+		self.add_pose_pushButton.clicked.connect(self.add_pose)
+		self.remove_pose_pushButton.clicked.connect(self.remove_pose)
 	
 	# ------------------------------------------------------
 	# Slots
@@ -162,7 +198,9 @@ class TestUI(QtGui.QWidget):
 	def add_host(self):
 		ip = str(self.ip_lineEdit.text().strip())
 		self.host_listWidget.addItem(ip)
+		sort_qlist(self.host_listWidget)
 		self.export_hosts_and_port()
+		self.ip_lineEdit.clear()
 		return
 	
 	def remove_host(self):
@@ -183,6 +221,48 @@ class TestUI(QtGui.QWidget):
 		json_data.write_json(cam_info, CAM_JSON_PATH, CAM_JSON)
 		return
 	
+	def add_pose(self):
+		pose = str(self.pose_lineEdit.text().strip())
+		self.poses_listWidget.addItem(pose)
+		sort_qlist(self.poses_listWidget)
+		self.export_pose_names()
+		self.pose_lineEdit.clear()
+		return
+	
+	def remove_pose(self):
+		selected_items = get_qlist_selected_items(self.poses_listWidget)
+		if selected_items:
+			remove_qlist_items(selected_items, self.poses_listWidget)
+			sort_qlist(self.poses_listWidget)
+		self.export_pose_names()
+		return
+	
+	def export_pose_names(self):
+		if not os.path.exists(CAM_JSON_PATH):
+			os.mkdir(CAM_JSON_PATH)
+		pose_list = get_qlist_items(self.poses_listWidget)
+		if pose_list:
+			poses = {}
+			poses['poses'] = {}
+			for pose in pose_list:
+				poses['poses'][str(pose)] = {}
+			json_data.write_json(poses, CAM_JSON_PATH, FACE_POSES_JSON)
+		return
+	
+	def shutdown_all(self):
+		port = int(self.port_lineEdit.text().strip())
+		hosts = get_qlist_items(self.host_listWidget)
+		sc.send_command(hosts, port)
+		return
+	
+	def shutdown_one(self):
+		port = int(self.port_lineEdit.text().strip())
+		selected = get_qlist_selected_items(self.host_listWidget)
+		hosts = list(selected)
+		sc.send_command(hosts, port)
+		return
+		
+	
 def get_qlist_items(qwidget):
 	all_items = []
 	for index in range(qwidget.count()):
@@ -195,6 +275,13 @@ def get_qlist_selected_items(qwidget):
 		items = [str(x.text()) for x in items]
 		return items
 	return
+
+def sort_qlist(qwidget):
+	items = get_qlist_items(qwidget)
+	items = sorted(items)
+	qwidget.clear()
+	qwidget.addItems(items)
+	return items
 
 def remove_qlist_items(items, qwidget):
 	all_items = []
@@ -214,9 +301,16 @@ def get_hosts_and_port():
 	if not os.path.exists(CAM_JSON_PATH):
 		return [[], None]
 	cam_info = json_data.read_json(CAM_JSON_PATH, CAM_JSON)
-	hosts = cam_info['hosts']
+	hosts = sorted(cam_info['hosts'])
 	port = cam_info['port']
 	return [hosts, port]
+
+def import_pose_names():
+	if not os.path.exists(CAM_JSON_PATH):
+		return
+	poses = json_data.read_json(CAM_JSON_PATH, FACE_POSES_JSON)
+	poses = sorted(poses['poses'].keys())
+	return poses
 
 def main():
 	app = QtGui.QApplication(sys.argv)

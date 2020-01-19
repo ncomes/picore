@@ -15,12 +15,10 @@ def send_command(hosts, port):
 	start_time = time.time()
 	for host in hosts:
 		server_socket = socket_connection(host, port)
-		server_socket.send(str.encode('PHOTO'))
+		server_socket.send(str.encode('SHUTDOWN'))
 		server_socket.close()
 	print('All completed.\n')
-	message = 'Photo Captures Completed.\n'
+	message = 'Shutting down:\n'
 	time_elapsed = str(datetime.timedelta(seconds=time.time() - start_time))
 	print(message + 'Time Elapsed: ' + time_elapsed)
 	return
-
-
