@@ -58,4 +58,4 @@ def pi_cam_still(name='picture.jpg', path=r'/home/pi/pictures', preview=False, p
 		camera.stop_preview()
 	return os.path.join(path, name)
 
-pi_cam_still()
+#pi_cam_still()
