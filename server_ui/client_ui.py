@@ -44,10 +44,20 @@ class TestUI(QtGui.QWidget):
 		self.shutdown_all_menu.setStatusTip('Turns off all the Raspberry Pi Servers.')
 		self.servers.addAction(self.shutdown_all_menu)
 		
-		self.shutdown_one_menu = QtGui.QAction('Shutdown One Servers', self)
+		self.shutdown_one_menu = QtGui.QAction('Shutdown Selected Server', self)
 		self.shutdown_one_menu.triggered.connect(self.shutdown_one)
 		self.shutdown_one_menu.setToolTip('Turns off the Raspberry Pi Server with the selected IP Address.')
 		self.servers.addAction(self.shutdown_one_menu)
+		
+		self.kill_all_menu = QtGui.QAction('Stop All Servers', self)
+		self.kill_all_menu.triggered.connect(self.kill_all)
+		self.kill_all_menu.setStatusTip('Stops all the Raspberry Pi Servers.')
+		self.servers.addAction(self.kill_all_menu)
+		
+		self.kill_one_menu = QtGui.QAction('Stop Selected Server', self)
+		self.kill_one_menu.triggered.connect(self.kill_one)
+		self.kill_one_menu.setToolTip('Stops Raspberry Pi Server with the selected IP Address.')
+		self.servers.addAction(self.kill_one_menu)
 		
 		self.main_v_layout.addWidget(self.menu_bar)
 		
@@ -192,7 +202,7 @@ class TestUI(QtGui.QWidget):
 	def capture(self):
 		port = int(self.port_lineEdit.text().strip())
 		hosts = get_qlist_items(self.host_listWidget)
-		mc.send_command(hosts, port)
+		mc.send_command(hosts, port, 'PHOTO')
 		return
 
 	def add_host(self):
@@ -252,16 +262,29 @@ class TestUI(QtGui.QWidget):
 	def shutdown_all(self):
 		port = int(self.port_lineEdit.text().strip())
 		hosts = get_qlist_items(self.host_listWidget)
-		sc.send_command(hosts, port)
+		mc.send_command(hosts, port, 'SHUTDOWN')
 		return
 	
 	def shutdown_one(self):
 		port = int(self.port_lineEdit.text().strip())
 		selected = get_qlist_selected_items(self.host_listWidget)
 		hosts = list(selected)
-		sc.send_command(hosts, port)
+		mc.send_command(hosts, port, 'SHUTDOWN')
 		return
-		
+	
+	def kill_all(self):
+		port = int(self.port_lineEdit.text().strip())
+		hosts = get_qlist_items(self.host_listWidget)
+		mc.send_command(hosts, port, 'KILL')
+		return
+	
+	def kill_one(self):
+		port = int(self.port_lineEdit.text().strip())
+		selected = get_qlist_selected_items(self.host_listWidget)
+		hosts = list(selected)
+		mc.send_command(hosts, port, 'KILL')
+		return
+	
 	
 def get_qlist_items(qwidget):
 	all_items = []
