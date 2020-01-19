@@ -1,0 +1,16 @@
+sudo apt-get update
+sudo apt-get upgrade
+
+sudo raspi-config
+change hostname and password [piServerZero##, zeroCam01]
+shh
+camera
+wifi
+
+sudo apt-get install python3-picamera
+
+sudo apt-get install git
+git clone https://github.com/ncomes/picore
+
+sudo mkdir pictures
+sudo chown pi /home/pi/pictures
