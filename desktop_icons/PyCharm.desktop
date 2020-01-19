@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=PyCharm
+Comment=Python IDE
+Icon=/usr/share/pycharm-community-2019.3.1/bin/pycharm.png
+Exec=/usr/share/pycharm-community-2019.3.1/bin/pycharm.sh
+Type=Application
+Encoding=UTF-8
+Terminal=false
+Categories=None
