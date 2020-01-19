@@ -45,8 +45,11 @@ def capture_all():
 
 #capture_one()
 
-def pi_cam_still(name='picture.jpg', path=r'/home/pi/Desktop', preview=False, preview_time=5):
+def pi_cam_still(name='picture.jpg', path=r'/home/pi/pictures', preview=False, preview_time=5):
 	camera = PiCamera()
+	if not os.path.isdir(path):
+		os.mkdir(path)
+		call(['sudo chown pi ' + path])
 	if preview:
 		camera.start_preview()
 		time.sleep(preview_time)
