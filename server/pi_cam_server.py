@@ -59,14 +59,15 @@ def data_transfer(connection):
 			print('Client has ended.')
 			break
 		elif command == 'KILL':
-			print('Server is shutting down...')
+			print('Server is stopping...')
 			server_socket.close()
+			conn.close()
 			break
 		elif command == 'SHUTDOWN':
 			print('Pi is shutting down...')
 			server_socket.close()
-			call('shutdown', '-h', 'now')
-			server_socket.close()
+			conn.close()
+			call('shutdown -h now', shell=True)
 			break
 		elif 'GITPULL' in command:
 			call('git pull')
