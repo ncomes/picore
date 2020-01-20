@@ -1,6 +1,7 @@
 #! /usr/bin/python3
 import sys
-sys.path.append(r'/home/pi/python_projects')
+main_path = r'/home/pi/picore'
+sys.path.append(main_path)
 
 import server_ui.multi_client as mc
 import server_ui.shutdown_client as sc
@@ -16,7 +17,7 @@ PORT = 5560
 
 CAM_JSON = 'hosts_and_port'
 FACE_POSES_JSON = 'face_poses'
-CAM_JSON_PATH = r'/home/pi/python_projects/json'
+CAM_JSON_PATH = os.path.join(main_path, 'json')
 
 class TestUI(QtGui.QWidget):
 	def __init__(self):
@@ -113,6 +114,7 @@ class TestUI(QtGui.QWidget):
 		
 		self.host_listWidget = QtGui.QListWidget()
 		self.list_widget_layout.addWidget(self.host_listWidget)
+		self.sel_host = self.host_listWidget.selectionModel()
 		
 		# line Edit for ip address
 		self.add_ip_layout = QtGui.QHBoxLayout()
@@ -183,6 +185,9 @@ class TestUI(QtGui.QWidget):
 		
 		self.pic_button = QtGui.QPushButton('Capture')
 		self.pic_btn_layout.addWidget(self.pic_button)
+
+		self.pic_sel_button = QtGui.QPushButton('Capture With Selected')
+		self.pic_btn_layout.addWidget(self.pic_sel_button)
 		
 		# populate information
 		hosts, port = get_hosts_and_port()
@@ -202,11 +207,14 @@ class TestUI(QtGui.QWidget):
 		# Signals
 		#------------------------------------------------------
 		self.pic_button.clicked.connect(self.capture)
+		self.pic_sel_button.clicked.connect(self.capture_selected)
 		self.add_host_pushButton.clicked.connect(self.add_host)
+		self.ip_lineEdit.returnPressed.connect(self.add_host)
 		self.remove_host_pushButton.clicked.connect(self.remove_host)
 		self.add_pose_pushButton.clicked.connect(self.add_pose)
 		self.remove_pose_pushButton.clicked.connect(self.remove_pose)
-	
+		self.sel_host.selectionChanged.connect(self.host_select_fill)
+
 	# ------------------------------------------------------
 	# Slots
 	# ------------------------------------------------------
@@ -219,12 +227,18 @@ class TestUI(QtGui.QWidget):
 		mc.send_command(hosts, port, 'PHOTO')
 		return
 
+	def capture_selected(self):
+		hosts = get_qlist_selected_items(self.host_listWidget)
+		port = int(self.port_lineEdit.text().strip())
+		if hosts:
+			mc.send_command(hosts, port, 'PHOTO')
+
 	def add_host(self):
 		ip = str(self.ip_lineEdit.text().strip())
 		self.host_listWidget.addItem(ip)
 		sort_qlist(self.host_listWidget)
 		self.export_hosts_and_port()
-		self.ip_lineEdit.clear()
+		#self.ip_lineEdit.clear()
 		return
 	
 	def remove_host(self):
@@ -311,7 +325,12 @@ class TestUI(QtGui.QWidget):
 		hosts = list(selected)
 		mc.send_command(hosts, port, 'GITPULL')
 		return
-	
+
+	def host_select_fill(self):
+		host = get_qlist_selected_items(self.host_listWidget)
+		if host:
+			self.ip_lineEdit.setText(str(host[0]))
+		return
 	
 def get_qlist_items(qwidget):
 	all_items = []
