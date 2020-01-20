@@ -47,8 +47,9 @@ def data_transfer(connection):
 		command = data_message[0]
 		reply = ''
 		if command == 'PHOTO':
-			pi_cam.pi_cam_still()
-			print('Finishing taking photos...')
+			cam_path = pi_cam.pi_cam_still()
+			print('Finishing taking photos...\n')
+			print(cam_path)
 			server_socket.close()
 			conn.close()
 			#time.sleep(2)
