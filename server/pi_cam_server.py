@@ -52,9 +52,9 @@ def data_transfer(connection):
 								path=PHOTO_PATH,
 								preview_time=2)
 			print('Finishing taking photos...\n')
+			time.sleep(5)
 			server_socket.close()
 			conn.close()
-			time.sleep(2)
 			start()
 		elif command == 'TEST':
 			reply = stored_value
