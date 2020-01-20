@@ -68,6 +68,8 @@ def data_transfer(connection):
 			call('shutdown', '-h', 'now')
 			server_socket.close()
 			break
+		elif 'GITPULL' in command:
+			call('git pull')
 		else:
 			reply = 'Unknown Command'
 		conn.sendall(str.encode(reply))
