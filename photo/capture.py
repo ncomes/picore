@@ -45,7 +45,7 @@ def capture_all():
 
 #capture_one()
 
-def pi_cam_still(name='picture.jpg', path=r'/home/pi/pictures', preview_time=0):
+def pi_cam_still(name='picture.jpg', path=r'/home/pi/pictures', preview_time=5):
 	camera = PiCamera()
 	camera.start_preview()
 	time.sleep(preview_time)
