@@ -48,11 +48,10 @@ def data_transfer(connection):
 		command = data_message[0]
 		reply = ''
 		if command == 'PHOTO':
-			pi_cam.pi_cam_still(name='picture.jpg',
-								path=PHOTO_PATH,
-								preview_time=0)
+			pi_cam.raspistill(name='picture.jpg',
+								path=PHOTO_PATH)
 			print('Finishing taking photos...\n')
-			time.sleep(2)
+			time.sleep(1)
 			server_socket.close()
 			break
 			#conn.close()
