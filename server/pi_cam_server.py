@@ -2,6 +2,7 @@ import socket
 # import photo.capture as take_photo
 from subprocess import call
 import pi_cam
+import time
 
 HOST = ''
 PORT = 5560
