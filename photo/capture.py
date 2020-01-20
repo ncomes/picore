@@ -46,6 +46,19 @@ def capture_all():
 #capture_one()
 
 
+def raspistill(name, path, flip_v=False, flip_h=False):
+	file_name = os.path.join(path, name)
+	flip_v_str = ''
+	flip_h_str = ''
+	if flip_v:
+		flip_v_str = '-vf'
+	if flip_h:
+		flip_h_str = '-hf'
+	call(['raspistill', flip_v_str, flip_h_str, file_name])
+	return file_name
+
+
+
 def pi_cam_still(name, path, preview_time):
 	camera = PiCamera()
 	#camera.resolution(2592, 1944)
