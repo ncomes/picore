@@ -37,7 +37,7 @@ def data_name(data):
 		for x in range(1, data_len):
 			commands.append(data_message[x])
 	hostname, ip_address = get_ip_address()
-	ip_name = str(ipaddress.split('.')[-1])
+	ip_name = str(ip_address.split('.')[-1])
 	commands.append(ip_name)
 	return commands
 
@@ -67,7 +67,7 @@ def data_transfer(connection):
 		data_message = data_name(data)
 		#data_message = data.split(' ', 1)
 		command = data_message[0]
-		file_name = data_message[1] + '_' + data_message[-1]
+		file_name = data_message[1] + '_' + data_message[-1] + '.jpg'
 		reply = ''
 		if command == 'PHOTO':
 			pi_cam.pi_cam_still(name=file_name,
