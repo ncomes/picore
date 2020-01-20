@@ -44,7 +44,9 @@ def data_name(data):
 
 def get_ip_address():
 	hostname = socket.gethostname()
+	print(hostname)
 	ip_address = socket.gethostbyname(hostname)
+	print(ip_address)
 	return [hostname, ip_address]
 
 
