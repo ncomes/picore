@@ -1,0 +1,10 @@
+set up samba ----------
+sudo apt-get install samba samba-common-bin
+----- press 'y'  and then No on the prompt screen
+
+---------------------
+config file ----
+
+sudo nano /etc/samba/smb.config
+
+[Movies]

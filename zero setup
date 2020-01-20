@@ -10,7 +10,7 @@ wifi
 sudo apt-get install python3-picamera
 
 sudo apt-get install git
-git clone https://github.com/ncomes/picore
+git clone https://github.com/ncomes/picore.git
 
 sudo mkdir pictures
 sudo chown pi /home/pi/pictures
