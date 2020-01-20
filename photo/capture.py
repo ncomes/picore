@@ -55,6 +55,6 @@ def pi_cam_still(name, path, preview_time):
 	#time.sleep(preview_time)
 	camera.capture(os.path.join(path, name))
 	#camera.stop_preview()
-	#camera.close()
+	camera.close()
 	return os.path.join(path, name)
 
