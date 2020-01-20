@@ -65,6 +65,7 @@ def data_transfer(connection):
 			print('Server is stopping...')
 			server_socket.close()
 			conn.close()
+			raise RuntimeError('Stopped Server...')
 			break
 		elif command == 'SHUTDOWN':
 			print('Pi is shutting down...')
