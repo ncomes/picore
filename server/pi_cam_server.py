@@ -49,7 +49,7 @@ def data_transfer(connection):
 		if command == 'PHOTO':
 			pi_cam.pi_cam_still(name='picture.jpg',
 								path=PHOTO_PATH,
-								preview_time=0)
+								preview_time=1)
 			print('Finishing taking photos...\n')
 			server_socket.close()
 			conn.close()
