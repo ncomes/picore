@@ -29,6 +29,26 @@ def setup_connection():
 	print('Connected to: ' + address[0] + ':' + str(address[1]))
 	return [conn, server_socket]
 
+def data_name(data):
+	data_message = data.split(' ', 1)
+	commands = [data_message[0]]
+	data_len = len(data_message)
+	if data_len > 1:
+		for x in range(1, data_len):
+			commands.append(data_message[x])
+	hostname, ip_address = get_ip_address()
+	ip_name = str(ipaddress.split('.')[-1])
+	commands.append(ip_name)
+	return commands
+
+
+def get_ip_address():
+	hostname = socket.gethostname()
+	ip_address = socket.gethostbyname(hostname)
+	return [hostname, ip_address]
+
+
+
 def data_transfer(connection):
 	'''
 	Big loop that sends/recieves data until told not to.
@@ -44,18 +64,18 @@ def data_transfer(connection):
 		data = data.decode('utf-8')
 		# Split the data that you separate the command
 		# from the rest of the data.
-		data_message = data.split(' ', 1)
+		data_message = data_name(data)
+		#data_message = data.split(' ', 1)
 		command = data_message[0]
+		file_name = data_message[1] + '_' + data_message[-1]
 		reply = ''
 		if command == 'PHOTO':
-			pi_cam.pi_cam_still(name='picture.jpg',
+			pi_cam.pi_cam_still(name=file_name,
 								path=PHOTO_PATH)
 			print('Finishing taking photos...\n')
 			time.sleep(1)
 			server_socket.close()
 			break
-			#conn.close()
-			#start()
 		elif command == 'TEST':
 			reply = stored_value
 		elif command == 'EXIT':
@@ -66,7 +86,6 @@ def data_transfer(connection):
 			server_socket.close()
 			conn.close()
 			raise RuntimeError('Stopped Server...')
-			break
 		elif command == 'SHUTDOWN':
 			print('Pi is shutting down...')
 			server_socket.close()
@@ -82,7 +101,6 @@ def data_transfer(connection):
 	conn.close()
 
 
-# SERVER_SOCKET = setup_server()s
 def start():
 	print('STARTING!')
 	while True:
