@@ -50,12 +50,13 @@ def data_transfer(connection):
 		if command == 'PHOTO':
 			pi_cam.pi_cam_still(name='picture.jpg',
 								path=PHOTO_PATH,
-								preview_time=2)
+								preview_time=0)
 			print('Finishing taking photos...\n')
-			time.sleep(5)
+			time.sleep(2)
 			server_socket.close()
-			conn.close()
-			start()
+			break
+			#conn.close()
+			#start()
 		elif command == 'TEST':
 			reply = stored_value
 		elif command == 'EXIT':
