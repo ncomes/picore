@@ -224,14 +224,16 @@ class TestUI(QtGui.QWidget):
 	def capture(self):
 		port = int(self.port_lineEdit.text().strip())
 		hosts = get_qlist_items(self.host_listWidget)
-		mc.send_command(hosts, port, 'PHOTO')
+		pose_name = get_qlist_selected_items(self.poses_listWidget)
+		mc.send_command(hosts, port, 'PHOTO' + ' ' + pose_name)
 		return
 
 	def capture_selected(self):
 		hosts = get_qlist_selected_items(self.host_listWidget)
 		port = int(self.port_lineEdit.text().strip())
+		pose_name = get_qlist_selected_items(self.poses_listWidget)
 		if hosts:
-			mc.send_command(hosts, port, 'PHOTO')
+			mc.send_command(hosts, port, 'PHOTO' + ' ' + pose_name)
 
 	def add_host(self):
 		ip = str(self.ip_lineEdit.text().strip())
