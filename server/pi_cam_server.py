@@ -53,7 +53,7 @@ def data_transfer(connection):
 			print('Finishing taking photos...\n')
 			server_socket.close()
 			conn.close()
-			#time.sleep(2)
+			time.sleep(2)
 			start()
 		elif command == 'TEST':
 			reply = stored_value
