@@ -5,7 +5,7 @@ import pi_cam
 
 HOST = ''
 PORT = 5560
-
+PHOTO_PATH = r'/home/pi/pictures'
 
 def setup_server():
 	server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -47,9 +47,10 @@ def data_transfer(connection):
 		command = data_message[0]
 		reply = ''
 		if command == 'PHOTO':
-			cam_path = pi_cam.pi_cam_still()
+			pi_cam.pi_cam_still(name='picture.jpg',
+								path=PHOTO_PATH,
+								review_time=0)
 			print('Finishing taking photos...\n')
-			print(cam_path)
 			server_socket.close()
 			conn.close()
 			#time.sleep(2)
@@ -68,7 +69,7 @@ def data_transfer(connection):
 			print('Pi is shutting down...')
 			server_socket.close()
 			conn.close()
-			call('shutdown -h now', shell=True)
+			call('sudo shutdown -h now', shell=True)
 			break
 		elif 'GITPULL' in command:
 			call('git pull')
