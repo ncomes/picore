@@ -47,10 +47,13 @@ def capture_all():
 
 def pi_cam_still(name='picture.jpg', path=r'/home/pi/pictures', preview_time=5):
 	camera = PiCamera()
+	camera.resolution(2592, 1944)
+	camera.preview_fullscreen=False
 	camera.start_preview()
 	time.sleep(preview_time)
 	camera.capture(os.path.join(path, name))
 	camera.stop_preview()
+	camera.close()
 	return os.path.join(path, name)
 
 #pi_cam_still()
