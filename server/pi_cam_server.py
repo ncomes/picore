@@ -37,7 +37,8 @@ def data_name(data):
 		for x in range(1, data_len):
 			commands.append(data_message[x])
 	hostname, ip_address = get_ip_address()
-	ip_name = str(ip_address.split('.')[-1])
+	#ip_name = str(ip_address.split('.')[-1])
+	ip_name = hostname
 	commands.append(ip_name)
 	return commands
 
