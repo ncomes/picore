@@ -45,9 +45,11 @@ def capture_all():
 
 #capture_one()
 
-def pi_cam_still(name='picture.jpg', path=r'/home/pi/pictures', preview_time=5):
+
+def pi_cam_still(name, path, preview_time):
 	camera = PiCamera()
-	camera.resolution(2592, 1944)
+	#camera.resolution(2592, 1944)
+	#camera.resolution(2688, 1520)
 	camera.preview_fullscreen=False
 	camera.start_preview()
 	time.sleep(preview_time)
@@ -56,4 +58,3 @@ def pi_cam_still(name='picture.jpg', path=r'/home/pi/pictures', preview_time=5):
 	camera.close()
 	return os.path.join(path, name)
 
-#pi_cam_still()
