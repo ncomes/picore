@@ -1,6 +1,9 @@
 {
     "hosts": [
-        "piServerZero01.local"
+        "piServerZero01.local",
+        "piServerZero02.local",
+        "piServerZero03.local",
+        "piServerZero04.local"
     ],
     "port": "5560"
 }
