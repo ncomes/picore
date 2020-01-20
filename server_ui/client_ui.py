@@ -39,6 +39,10 @@ class TestUI(QtGui.QWidget):
 		self.servers.setTitle('Servers')
 		self.menu_bar.addMenu(self.servers)
 		
+		self.update_servers = QtGui.QMenu(self)
+		self.update_servers.setTitle('Git')
+		self.menu_bar.addMenu(self.update_servers)
+		
 		self.shutdown_all_menu = QtGui.QAction('Shutdown All Servers', self)
 		self.shutdown_all_menu.triggered.connect(self.shutdown_all)
 		self.shutdown_all_menu.setStatusTip('Turns off all the Raspberry Pi Servers.')
@@ -58,6 +62,16 @@ class TestUI(QtGui.QWidget):
 		self.kill_one_menu.triggered.connect(self.kill_one)
 		self.kill_one_menu.setToolTip('Stops Raspberry Pi Server with the selected IP Address.')
 		self.servers.addAction(self.kill_one_menu)
+		
+		self.update_servers_all = QtGui.QAction('Python Update All Servers', self)
+		self.update_servers_all.triggered.connect(self.update_all)
+		self.update_servers_all.setStatusTip('Stops all the Raspberry Pi Servers.')
+		self.update_servers.addAction(self.update_servers_all)
+		
+		self.update_one_menu = QtGui.QAction('Python Update Selected Server', self)
+		self.update_one_menu.triggered.connect(self.update_one)
+		self.update_one_menu.setToolTip('Stops Raspberry Pi Server with the selected IP Address.')
+		self.update_servers.addAction(self.update_one_menu)
 		
 		self.main_v_layout.addWidget(self.menu_bar)
 		
@@ -283,6 +297,19 @@ class TestUI(QtGui.QWidget):
 		selected = get_qlist_selected_items(self.host_listWidget)
 		hosts = list(selected)
 		mc.send_command(hosts, port, 'KILL')
+		return
+	
+	def update_all(self):
+		port = int(self.port_lineEdit.text().strip())
+		hosts = get_qlist_items(self.host_listWidget)
+		mc.send_command(hosts, port, 'GITPULL')
+		return
+	
+	def update_one(self):
+		port = int(self.port_lineEdit.text().strip())
+		selected = get_qlist_selected_items(self.host_listWidget)
+		hosts = list(selected)
+		mc.send_command(hosts, port, 'GITPULL')
 		return
 	
 	

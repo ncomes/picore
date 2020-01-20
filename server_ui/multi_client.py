@@ -20,6 +20,8 @@ def send_command(hosts, port, command=''):
 		message = 'Shutting Down:\n'
 	elif command == 'KILL':
 		message = 'Stoppping Server.\n'
+	elif 'GITPULL' in command:
+		message = 'updating git.\n'
 	start_time = time.time()
 	for host in hosts:
 		server_socket = socket_connection(host, port)
