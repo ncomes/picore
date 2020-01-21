@@ -29,6 +29,7 @@ def setup_connection():
 	print('Connected to: ' + address[0] + ':' + str(address[1]))
 	return [conn, server_socket]
 
+
 def data_name(data):
 	data_message = data.split(' ', 1)
 	commands = [data_message[0]]
@@ -49,7 +50,6 @@ def get_ip_address():
 	ip_address = socket.gethostbyname(hostname)
 	print(ip_address)
 	return [hostname, ip_address]
-
 
 
 def data_transfer(connection):
@@ -96,7 +96,10 @@ def data_transfer(connection):
 			call('sudo shutdown -h now', shell=True)
 			break
 		elif 'GITPULL' in command:
-			call('git pull')
+			print('Getting latest')
+			call('cd /home/pi/picore; git pull; cd /home/pi')
+			time.sleep(5)
+			server_socket.close()
 		else:
 			reply = 'Unknown Command'
 		conn.sendall(str.encode(reply))
