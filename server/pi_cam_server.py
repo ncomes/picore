@@ -97,9 +97,11 @@ def data_transfer(connection):
 			break
 		elif 'GITPULL' in command:
 			print('Getting latest')
-			call('cd /home/pi/picore; git pull; cd /home/pi')
+			call('cd /home/pi/picore && git pull')
 			time.sleep(5)
 			server_socket.close()
+			conn.close()
+			call('sudo reboot', shell=True)
 		else:
 			reply = 'Unknown Command'
 		conn.sendall(str.encode(reply))
