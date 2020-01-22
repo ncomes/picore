@@ -97,7 +97,8 @@ def data_transfer(connection):
 			break
 		elif 'GITPULL' in command:
 			print('Getting latest')
-			call('cd /home/pi/picore && git pull')
+			git_path = r'/home/pi/picore'
+			call('cd '+git_path+' && git pull')
 			time.sleep(5)
 			server_socket.close()
 			conn.close()
