@@ -1,5 +1,5 @@
 import sys
-main_path = r'/home/pi/picore'
+main_path = r'/home/pi/picore/git'
 sys.path.append(main_path)
 
 import socket
