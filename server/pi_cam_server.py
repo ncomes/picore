@@ -68,7 +68,7 @@ def get_ip_address():
 def send_file(file_name):
 	full_file_name = os.path.join(PHOTO_PATH, file_name)
 	ssh = ssh_client.SSHClient()
-	ssh.open_connection(hostname='pi@picore.local',
+	ssh.open_connection(hostname='picore.local',
 						username='pi',
 						pswd='raspberry')
 	ssh.send_file(full_file_name, full_file_name)
