@@ -1,8 +1,13 @@
+main_path = r'/home/pi/picore'
+sys.path.append(main_path)
+
 import socket
 # import photo.capture as take_photo
 from subprocess import call
 import pi_cam
 import time
+import git.git_commands as git_client
+import ssh.ssh_connect as ssh_client
 
 HOST = ''
 PORT = 5560
@@ -43,6 +48,11 @@ def data_name(data):
 	commands.append(ip_name)
 	return commands
 
+def git_pull():
+	git_dir = r'/home/pi/picore'
+	git_commands = git_client.GitClient()
+	git_commands.git_pull(git_dir)
+	return
 
 def get_ip_address():
 	hostname = socket.gethostname()
@@ -51,6 +61,15 @@ def get_ip_address():
 	print(ip_address)
 	return [hostname, ip_address]
 
+def send_file(file_name):
+	full_file_name = os.path.join(PHOTO_PATH, file_name)
+	ssh = ssh_client.SSHClient()
+	ssh.open_connection(hostname='pi@picore.local',
+						username='pi',
+						pswd='raspberry')
+	ssh.send_file(full_file_name, full_file_name)
+	ssh.close_connection()
+	return
 
 def data_transfer(connection):
 	'''
@@ -77,6 +96,7 @@ def data_transfer(connection):
 								path=PHOTO_PATH)
 			print('Finishing taking photos...\n')
 			time.sleep(1)
+			send_file(file_name)
 			server_socket.close()
 			break
 		elif command == 'TEST':
@@ -84,11 +104,13 @@ def data_transfer(connection):
 		elif command == 'EXIT':
 			print('Client has ended.')
 			break
+
 		elif command == 'KILL':
 			print('Server is stopping...')
 			server_socket.close()
 			conn.close()
 			raise RuntimeError('Stopped Server...')
+
 		elif command == 'SHUTDOWN':
 			print('Pi is shutting down...')
 			server_socket.close()
@@ -97,12 +119,13 @@ def data_transfer(connection):
 			break
 		elif 'GITPULL' in command:
 			print('Getting latest')
-			git_path = r'/home/pi/picore'
-			call('cd '+git_path+' && git pull')
-			time.sleep(5)
+			git_pull()
+
+		elif 'REBOOT' in commands:
 			server_socket.close()
 			conn.close()
 			call('sudo reboot', shell=True)
+
 		else:
 			reply = 'Unknown Command'
 		conn.sendall(str.encode(reply))
