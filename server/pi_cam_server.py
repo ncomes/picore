@@ -67,12 +67,13 @@ def get_ip_address():
 
 def send_file(file_name):
 	full_file_name = os.path.join(PHOTO_PATH, file_name)
-	ssh = ssh_client.SSHClient()
-	ssh.open_connection(hostname='piDepot01.local',
-						username='pi',
-						pswd='piDepot')
-	ssh.send_file(full_file_name, full_file_name)
-	ssh.close_connection()
+	ssh.ssh_send_file(full_file_name, full_file_name, 'pi', 'piDepot')
+	#ssh = ssh_client.SSHClient()
+	#ssh.open_connection(hostname='piDepot01.local',
+	#					username='pi',
+	#					pswd='piDepot')
+	#ssh.send_file(full_file_name, full_file_name)
+	#ssh.close_connection()
 	return
 
 def data_transfer(connection):
