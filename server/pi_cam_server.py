@@ -125,7 +125,7 @@ def data_transfer(connection):
 			print('Getting latest')
 			git_pull()
 
-		elif 'REBOOT' in commands:
+		elif 'REBOOT' in command:
 			server_socket.close()
 			conn.close()
 			call('sudo reboot', shell=True)
