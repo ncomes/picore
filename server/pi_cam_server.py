@@ -55,7 +55,7 @@ def data_name(data):
 def git_pull():
 	git_dir = r'/home/pi/picore'
 	git_commands = git_client.GitClient()
-	git_commands.git_pull(git_dir)
+	git_commands.pull(git_dir)
 	return
 
 def get_ip_address():
