@@ -8,8 +8,9 @@ import socket
 from subprocess import call
 import pi_cam
 import time
-import git.git_commands as git_client
 import ssh.ssh_connect as ssh_client
+import git_handler.git_commands as git_client
+#import ssh.ssh_connect as ssh_client
 
 HOST = ''
 PORT = 5560
