@@ -24,7 +24,7 @@ def ssh_send_file(localpath, remotepath, username, password):
     ssh = paramiko.SSHClient()
 
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    ssh.connect(hostname='piDepot01.local', username=username, password=password)
+    ssh.connect(hostname='picore.local', username=username, password=password)
     sftp = ssh.open_sftp()
     sftp.put(localpath, remotepath)
     sftp.close()
