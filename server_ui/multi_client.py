@@ -1,4 +1,5 @@
 import datetime
+import python_core.lists as lists
 import socket
 import time
 
@@ -14,7 +15,7 @@ def socket_connection(host, port):
 def send_command(hosts, port, command=''):
 	if not command or command == '':
 		return
-	elif command == 'PHOTO':
+	elif 'PHOTO' in command:
 		message = 'Photo Captures Complete.\n'
 	elif command == 'SHUTDOWN':
 		message = 'Shutting Down:\n'
@@ -25,7 +26,12 @@ def send_command(hosts, port, command=''):
 	start_time = time.time()
 	for host in hosts:
 		server_socket = socket_connection(host, port)
+		original_command = command
+		if 'PHOTO' in command:
+			command = command + '_' + str(strip_host_number(host))
 		server_socket.send(str.encode(command))
+		print(command)
+		command = original_command
 		server_socket.close()
 	print('All completed.\n')
 	message = 'Photo Captures Completed.\n'
@@ -34,3 +40,7 @@ def send_command(hosts, port, command=''):
 	return
 
 
+def strip_host_number(hostname):
+	host_num = hostname.split('.')
+	host_string = lists.first_in_list(host_num)
+	return host_string

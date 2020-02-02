@@ -3,12 +3,14 @@ import sys
 main_path = r'/home/pi/picore'
 sys.path.append(main_path)
 
-import server_ui.multi_client as mc
-import server_ui.shutdown_client as sc
+import datetime
 import python_core.json_data as json_data
 import PySide.QtCore as QtCore
 import PySide.QtGui as QtGui
 import os
+import server_ui.multi_client as mc
+import server_ui.shutdown_client as sc
+
 
 
 
@@ -18,10 +20,11 @@ PORT = 5560
 CAM_JSON = 'hosts_and_port'
 FACE_POSES_JSON = 'face_poses'
 CAM_JSON_PATH = os.path.join(main_path, 'json')
+PHOTO_PATH = r'/home/pi/pictures'
 
-class TestUI(QtGui.QWidget):
+class MultiServerCaptureUI(QtGui.QWidget):
 	def __init__(self):
-		super(TestUI, self).__init__()
+		super(MultiServerCaptureUI, self).__init__()
 		self.init_ui()
 	
 	def init_ui(self):
@@ -35,45 +38,65 @@ class TestUI(QtGui.QWidget):
 		self.setLayout(self.main_v_layout)
 		
 		# Menu bar
+		# menu Servers
 		self.menu_bar = QtGui.QMenuBar(parent=self)
 		self.servers = QtGui.QMenu(self)
 		self.servers.setTitle('Servers')
 		self.menu_bar.addMenu(self.servers)
-		
+
+		# menu Git
 		self.update_servers = QtGui.QMenu(self)
 		self.update_servers.setTitle('Git')
 		self.menu_bar.addMenu(self.update_servers)
-		
-		self.shutdown_all_menu = QtGui.QAction('Shutdown All Servers', self)
-		self.shutdown_all_menu.triggered.connect(self.shutdown_all)
-		self.shutdown_all_menu.setStatusTip('Turns off all the Raspberry Pi Servers.')
-		self.servers.addAction(self.shutdown_all_menu)
-		
-		self.shutdown_one_menu = QtGui.QAction('Shutdown Selected Server', self)
-		self.shutdown_one_menu.triggered.connect(self.shutdown_one)
-		self.shutdown_one_menu.setToolTip('Turns off the Raspberry Pi Server with the selected IP Address.')
-		self.servers.addAction(self.shutdown_one_menu)
-		
-		self.kill_all_menu = QtGui.QAction('Stop All Servers', self)
+
+		# menu Power Options
+		self.pwr_opt_menu = QtGui.QMenu(self)
+		self.pwr_opt_menu.setTitle('Power Options')
+		self.menu_bar.addMenu(self.pwr_opt_menu)
+
+		# Server Actions
+		self.kill_all_menu = QtGui.QAction('Stop All', self)
 		self.kill_all_menu.triggered.connect(self.kill_all)
 		self.kill_all_menu.setStatusTip('Stops all the Raspberry Pi Servers.')
 		self.servers.addAction(self.kill_all_menu)
 		
-		self.kill_one_menu = QtGui.QAction('Stop Selected Server', self)
+		self.kill_one_menu = QtGui.QAction('Stop Selected', self)
 		self.kill_one_menu.triggered.connect(self.kill_one)
 		self.kill_one_menu.setToolTip('Stops Raspberry Pi Server with the selected IP Address.')
 		self.servers.addAction(self.kill_one_menu)
-		
-		self.update_servers_all = QtGui.QAction('Python Update All Servers', self)
+
+		# Git Actions
+		self.update_servers_all = QtGui.QAction('Python Update All', self)
 		self.update_servers_all.triggered.connect(self.update_all)
 		self.update_servers_all.setStatusTip('Stops all the Raspberry Pi Servers.')
 		self.update_servers.addAction(self.update_servers_all)
 		
-		self.update_one_menu = QtGui.QAction('Python Update Selected Server', self)
+		self.update_one_menu = QtGui.QAction('Python Update Selected', self)
 		self.update_one_menu.triggered.connect(self.update_one)
 		self.update_one_menu.setToolTip('Stops Raspberry Pi Server with the selected IP Address.')
 		self.update_servers.addAction(self.update_one_menu)
-		
+
+		# Power Actions
+		self.shutdown_all_menu = QtGui.QAction('Shutdown All', self)
+		self.shutdown_all_menu.triggered.connect(self.shutdown_all)
+		self.shutdown_all_menu.setStatusTip('Turns off all the Raspberry Pi Servers.')
+		self.pwr_opt_menu.addAction(self.shutdown_all_menu)
+
+		self.shutdown_one_menu = QtGui.QAction('Shutdown Selected', self)
+		self.shutdown_one_menu.triggered.connect(self.shutdown_one)
+		self.shutdown_one_menu.setToolTip('Turns off the Raspberry Pi Server with the selected IP Address.')
+		self.pwr_opt_menu.addAction(self.shutdown_one_menu)
+
+		self.reboot_all_menu = QtGui.QAction('Reboot All', self)
+		self.reboot_all_menu.triggered.connect(lambda : self.reboot_now(all=True))
+		self.reboot_all_menu.setStatusTip('Turns off all the Raspberry Pi Servers.')
+		self.pwr_opt_menu.addAction(self.reboot_all_menu)
+
+		self.reboot_one_menu = QtGui.QAction('Reboot Selected', self)
+		self.reboot_one_menu.triggered.connect(lambda : self.reboot_now(all=False))
+		self.reboot_one_menu.setToolTip('Turns off the Raspberry Pi Server with the selected IP Address.')
+		self.pwr_opt_menu.addAction(self.reboot_one_menu)
+
 		self.main_v_layout.addWidget(self.menu_bar)
 		
 		### Main Layout ###
@@ -225,7 +248,7 @@ class TestUI(QtGui.QWidget):
 		port = int(self.port_lineEdit.text().strip())
 		hosts = get_qlist_items(self.host_listWidget)
 		pose_name = get_qlist_selected_items(self.poses_listWidget)[0]
-		mc.send_command(hosts, port, 'PHOTO' + ' ' + pose_name)
+		mc.send_command(hosts, port, 'PHOTO' + ' ' + str(self.get_datetime()) + '_' + pose_name)
 		return
 
 	def capture_selected(self):
@@ -233,7 +256,7 @@ class TestUI(QtGui.QWidget):
 		port = int(self.port_lineEdit.text().strip())
 		pose_name = get_qlist_selected_items(self.poses_listWidget)[0]
 		if hosts:
-			mc.send_command(hosts, port, 'PHOTO' + ' ' + pose_name)
+			mc.send_command(hosts, port, 'PHOTO' + ' ' + str(self.get_datetime()) + '_' + pose_name)
 
 	def add_host(self):
 		ip = str(self.ip_lineEdit.text().strip())
@@ -301,7 +324,17 @@ class TestUI(QtGui.QWidget):
 		hosts = list(selected)
 		mc.send_command(hosts, port, 'SHUTDOWN')
 		return
-	
+
+	def reboot_now(self, all=True):
+		port = int(self.port_lineEdit.text().strip())
+		hosts = []
+		selected = get_qlist_selected_items(self.host_listWidget)
+		hosts = list(selected)
+		if all:
+			hosts = get_qlist_items(self.host_listWidget)
+		mc.send_command(hosts, port, 'REBOOT')
+		return
+
 	def kill_all(self):
 		port = int(self.port_lineEdit.text().strip())
 		hosts = get_qlist_items(self.host_listWidget)
@@ -333,7 +366,25 @@ class TestUI(QtGui.QWidget):
 		if host:
 			self.ip_lineEdit.setText(str(host[0]))
 		return
-	
+
+	def get_datetime(self):
+		today = datetime.date.today()
+		curr_time = datetime.datetime.now()
+		time_list = [today.year, today.month, today.day, curr_time.hour, curr_time.minute, curr_time.second]
+		letters = ['y', 'm', 'd', 'h', 'min', 's']
+		time_list = list(map(lambda x: str(x), time_list))
+		timestamp = ''
+		for x in range(len(time_list)):
+			timestamp += time_list[x]+letters[x]
+		return timestamp
+
+	def create_directory(self):
+		if not os.path.exists(PHOTO_PATH):
+			os.mkdir(PHOTO_PATH)
+		os.mkdir(os.path.join(PHOTO_PATH, 'PHOTOS' + self.get_datetime()))
+		return os.path.join(PHOTO_PATH, 'PHOTOS' + self.get_datetime())
+
+
 def get_qlist_items(qwidget):
 	all_items = []
 	for index in range(qwidget.count()):
@@ -385,10 +436,9 @@ def import_pose_names():
 
 def main():
 	app = QtGui.QApplication(sys.argv)
-	ui = TestUI()
+	ui = MultiServerCaptureUI()
 	ui.show()
 	sys.exit(app.exec_())
-
 
 
 if __name__ == '__main__':
