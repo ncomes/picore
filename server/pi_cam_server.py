@@ -103,6 +103,7 @@ def data_transfer(connection):
 			print('Finishing taking photos...\n')
 			time.sleep(1)
 			send_file(file_name)
+			time.sleep(5)
 			server_socket.close()
 			break
 		elif command == 'TEST':
