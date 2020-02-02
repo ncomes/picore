@@ -67,7 +67,8 @@ def get_ip_address():
 
 def send_file(file_name):
 	full_file_name = os.path.join(PHOTO_PATH, file_name)
-	ssh_client.ssh_send_file(full_file_name, full_file_name, 'pi', 'piDepot')
+	ssh_client.ssh_send_file(full_file_name, full_file_name, 'pi', 'raspberry')
+	call('sudo rm ' + full_file_name)
 	#ssh = ssh_client.SSHClient()
 	#ssh.open_connection(hostname='piDepot01.local',
 	#					username='pi',
@@ -125,6 +126,9 @@ def data_transfer(connection):
 		elif 'GITPULL' in command:
 			print('Getting latest')
 			git_pull()
+			server_socket.close()
+			conn.close()
+			call('sudo reboot', shell=True)
 
 		elif 'REBOOT' in command:
 			server_socket.close()
@@ -150,4 +154,6 @@ def start():
 	print('start() has stopped!')
 
 
-start()
+if __name__ == '__main__':
+	start()
+
