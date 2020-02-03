@@ -68,7 +68,7 @@ def get_ip_address():
 def send_file(file_name):
 	full_file_name = os.path.join(PHOTO_PATH, file_name)
 	ssh_client.ssh_send_file(full_file_name, full_file_name, 'pi', 'raspberry')
-	call('sudo rm ' + full_file_name)
+	#call('sudo rm ' + full_file_name)
 	#ssh = ssh_client.SSHClient()
 	#ssh.open_connection(hostname='piDepot01.local',
 	#					username='pi',
