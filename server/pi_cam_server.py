@@ -68,8 +68,6 @@ def get_ip_address():
 def send_file(file_name):
 	full_file_name = os.path.join(PHOTO_PATH, file_name)
 	ssh_client.ssh_send_file(full_file_name, full_file_name, 'pi', 'raspberry')
-	print(os.path.join(PHOTO_PATH, file_name))
-	#call('sudo rm ' + os.path.join(PHOTO_PATH, file_name))
 	#ssh = ssh_client.SSHClient()
 	#ssh.open_connection(hostname='piDepot01.local',
 	#					username='pi',
@@ -104,7 +102,8 @@ def data_transfer(connection):
 			print('Finishing taking photos...\n')
 			time.sleep(1)
 			send_file(file_name)
-			time.sleep(5)
+			time.sleep(2)
+			call(['sudo', 'rm', os.path.join(PHOTO_PATH, file_name)])
 			server_socket.close()
 			break
 		elif command == 'TEST':
