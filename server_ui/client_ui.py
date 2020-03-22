@@ -8,6 +8,7 @@ import python_core.json_data as json_data
 import PySide.QtCore as QtCore
 import PySide.QtGui as QtGui
 import os
+import time
 import server_ui.multi_client as mc
 import server_ui.shutdown_client as sc
 
@@ -21,6 +22,7 @@ CAM_JSON = 'hosts_and_port'
 FACE_POSES_JSON = 'face_poses'
 CAM_JSON_PATH = os.path.join(main_path, 'json')
 PHOTO_PATH = r'/home/pi/pictures'
+MEDIA_PATH = r'/media/pi/Elements'
 
 class MultiServerCaptureUI(QtGui.QWidget):
 	def __init__(self):
@@ -137,6 +139,7 @@ class MultiServerCaptureUI(QtGui.QWidget):
 		
 		self.host_listWidget = QtGui.QListWidget()
 		self.list_widget_layout.addWidget(self.host_listWidget)
+		self.host_listWidget.setSelectionMode(QtGui.QAbstractItemView.ExtendedSelection)
 		self.sel_host = self.host_listWidget.selectionModel()
 		
 		# line Edit for ip address
@@ -245,6 +248,7 @@ class MultiServerCaptureUI(QtGui.QWidget):
 		print('Photo Taken!!!')
 	
 	def capture(self):
+		time.sleep(3)
 		port = int(self.port_lineEdit.text().strip())
 		hosts = get_qlist_items(self.host_listWidget)
 		pose_name = get_qlist_selected_items(self.poses_listWidget)[0]
@@ -252,6 +256,7 @@ class MultiServerCaptureUI(QtGui.QWidget):
 		return
 
 	def capture_selected(self):
+		time.sleep(3)
 		hosts = get_qlist_selected_items(self.host_listWidget)
 		port = int(self.port_lineEdit.text().strip())
 		pose_name = get_qlist_selected_items(self.poses_listWidget)[0]

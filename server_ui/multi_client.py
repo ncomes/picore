@@ -26,12 +26,7 @@ def send_command(hosts, port, command=''):
 	start_time = time.time()
 	for host in hosts:
 		server_socket = socket_connection(host, port)
-		original_command = command
-		if 'PHOTO' in command:
-			command = command + '_' + str(strip_host_number(host))
 		server_socket.send(str.encode(command))
-		print(command)
-		command = original_command
 		server_socket.close()
 	print('All completed.\n')
 	message = 'Photo Captures Completed.\n'
