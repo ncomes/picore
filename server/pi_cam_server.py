@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 import sys
-main_path = r'/home/pi/picore'
-sys.path.append(main_path)
+MAIN_PATH = r'/home/pi/picore'
+sys.path.append(MAIN_PATH)
 
 import socket
 # import photo.capture as take_photo
@@ -68,12 +68,6 @@ def get_ip_address():
 def send_file(file_name):
 	full_file_name = os.path.join(PHOTO_PATH, file_name)
 	ssh_client.ssh_send_file(full_file_name, full_file_name, 'pi', 'raspberry')
-	#ssh = ssh_client.SSHClient()
-	#ssh.open_connection(hostname='piDepot01.local',
-	#					username='pi',
-	#					pswd='piDepot')
-	#ssh.send_file(full_file_name, full_file_name)
-	#ssh.close_connection()
 	return
 
 def data_transfer(connection):
@@ -92,7 +86,6 @@ def data_transfer(connection):
 		# Split the data that you separate the command
 		# from the rest of the data.
 		data_message = data_name(data)
-		#data_message = data.split(' ', 1)
 		command = data_message[0]
 		file_name = data_message[1] + '_' + data_message[-1] + '.jpg'
 		reply = ''
